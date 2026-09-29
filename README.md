@@ -2,6 +2,12 @@
 
 Поле телефона с выбором страны для Contact Form 7 на базе International Telephone Input
 
+## 🖼 Скриншот
+
+Страница настроек: Contact → Международный Телефон
+
+![Страница настроек плагина](screenshots/settings.png)
+
 ## 🚀 Быстрый старт
 
 Скачайте репозиторий и положите папку в `wp-content/plugins/`:
