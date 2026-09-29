@@ -50,7 +50,7 @@ assets/
 В шаблоне письма:
 
 ```
-Телефон: +[your-phone-code] [your-phone]
+Телефон: [your-phone-code] [your-phone]
 ```
 
 ## Опции тега

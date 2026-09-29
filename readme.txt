@@ -21,7 +21,7 @@ License: GPLv2 or later
 
 В шаблоне письма:
 
-	Телефон: +[your-phone-code] [your-phone]
+	Телефон: [your-phone-code] [your-phone]
 
 Опции тега (списки стран — через дефис, без пробелов и запятых):
 
