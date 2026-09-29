@@ -1,0 +1,72 @@
+/*
+ * Настраиваемые значения. Чтобы переопределить на конкретном сайте —
+ * задайте нужную переменную в своём CSS, например:
+ *   :root { --intltel-search-height: 60px; }
+ * Переопределять сами правила ниже (с !important) не нужно.
+ */
+:root {
+	--intltel-font-family: inherit;
+	--intltel-font-size: inherit;
+	--intltel-search-font-size: 16px;
+	--intltel-search-height: 50px;
+	--intltel-search-padding: 10px 34px;
+	--intltel-country-padding: 8px 10px;
+	--intltel-dial-code-margin: 10px;
+}
+
+.wpcf7-intltel-wrap .iti {
+	display: block;
+	width: 100%;
+}
+
+.wpcf7-intltel {
+	width: 100%;
+}
+
+/*
+ * Многие темы задают стили через теговые селекторы низкой специфичности
+ * (`li{...}`, `input{...}`), которые всё равно перебивают свойства,
+ * не переопределённые в самой intl-tel-input — из-за этого «плывут»
+ * строки списка стран и поле поиска. !important здесь только защищает
+ * от такой протечки темы, а сами значения — в переменных выше.
+ */
+.iti__country-list,
+.iti__country-list li {
+	list-style: none;
+	margin: 0;
+}
+
+.iti__country-list .iti__country {
+	gap: 0 !important;
+	align-self: auto !important;
+	position: static !important;
+	font-family: var( --intltel-font-family ) !important;
+	font-size: var( --intltel-font-size ) !important;
+	line-height: normal !important;
+	padding: var( --intltel-country-padding ) !important;
+}
+
+.iti__country-list .iti__country-name,
+.iti__country-list .iti__country-dial-code {
+	font: inherit;
+}
+
+.iti__search-input {
+	box-sizing: border-box !important;
+	width: 100% !important;
+	height: var( --intltel-search-height ) !important;
+	min-height: 0 !important;
+	font-family: var( --intltel-font-family ) !important;
+	font-size: var( --intltel-search-font-size ) !important;
+	line-height: normal !important;
+	box-shadow: none !important;
+	border: 0 !important;
+	border-radius: 0 !important;
+	background-color: transparent !important;
+	padding: var( --intltel-search-padding ) !important;
+}
+
+.iti__selected-dial-code {
+	margin-left: var( --intltel-dial-code-margin );
+	line-height: 1;
+}
