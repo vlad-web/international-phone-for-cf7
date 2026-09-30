@@ -150,6 +150,16 @@ class Intltel_CF7_Form_Tag {
 		);
 	}
 
+	// Формат национального номера для стран, где длины мало: например, в США/Канаде
+	// код региона не начинается с 0 или 1, поэтому номер с приклеенным кодом страны
+	// («1 201 555 012» — 10 цифр) не должен проходить как 10-значный национальный.
+	private static function get_national_patterns() {
+		return array(
+			'1' => '/^[2-9][0-9]{2}[2-9][0-9]{6}$/', // US, CA (NANP)
+			'7' => '/^[3489][0-9]{9}$/',            // RU, KZ
+		);
+	}
+
 	public static function validate( $result, $tag ) {
 		$tag = new WPCF7_FormTag( $tag );
 
@@ -185,7 +195,11 @@ class Intltel_CF7_Form_Tag {
 			$max = 14;
 		}
 
+		$patterns = self::get_national_patterns();
+
 		if ( strlen( $digits ) < $min || strlen( $digits ) > $max ) {
+			$result->invalidate( $tag, __( 'Введите корректный номер телефона.', 'intltel-cf7' ) );
+		} elseif ( $dial_code && isset( $patterns[ $dial_code ] ) && ! preg_match( $patterns[ $dial_code ], $digits ) ) {
 			$result->invalidate( $tag, __( 'Введите корректный номер телефона.', 'intltel-cf7' ) );
 		}
 

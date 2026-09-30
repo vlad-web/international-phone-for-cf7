@@ -17,12 +17,45 @@ class Intltel_CF7_Settings {
 			'legacy_selector'      => '.phone',
 			'legacy_code_selector' => '.phoneCode',
 			'default_country'      => 'ru',
+			'language_countries'   => '',
 			'auto_detect_country'  => '',
 		);
 
 		$options = get_option( self::OPTION_KEY, array() );
 
 		return wp_parse_args( $options, $defaults );
+	}
+
+	/**
+	 * Страна по умолчанию с учётом языка текущей страницы.
+	 */
+	public static function get_default_country() {
+		$options = self::get_options();
+		$country = $options['default_country'];
+
+		if ( empty( $options['language_countries'] ) ) {
+			return $country;
+		}
+
+		$lang = '';
+		if ( function_exists( 'pll_current_language' ) ) {
+			$lang = (string) pll_current_language();
+		} elseif ( defined( 'ICL_LANGUAGE_CODE' ) ) {
+			$lang = ICL_LANGUAGE_CODE;
+		}
+		if ( '' === $lang ) {
+			$lang = substr( determine_locale(), 0, 2 );
+		}
+		$lang = strtolower( $lang );
+
+		foreach ( explode( ',', $options['language_countries'] ) as $pair ) {
+			$parts = array_map( 'trim', explode( ':', $pair ) );
+			if ( 2 === count( $parts ) && strtolower( $parts[0] ) === $lang && preg_match( '/^[a-zA-Z]{2}$/', $parts[1] ) ) {
+				return strtolower( $parts[1] );
+			}
+		}
+
+		return $country;
 	}
 
 	public static function add_menu() {
@@ -53,6 +86,14 @@ class Intltel_CF7_Settings {
 			'default_country',
 			__( 'Страна по умолчанию', 'intltel-cf7' ),
 			array( __CLASS__, 'render_default_country_field' ),
+			'intltel-cf7-settings',
+			'intltel_cf7_general_section'
+		);
+
+		add_settings_field(
+			'language_countries',
+			__( 'Страна по языкам', 'intltel-cf7' ),
+			array( __CLASS__, 'render_language_countries_field' ),
 			'intltel-cf7-settings',
 			'intltel_cf7_general_section'
 		);
@@ -98,7 +139,9 @@ class Intltel_CF7_Settings {
 		$default_country = isset( $input['default_country'] ) ? strtolower( sanitize_text_field( $input['default_country'] ) ) : '';
 		$output['default_country'] = preg_match( '/^[a-z]{2}$/', $default_country ) ? $default_country : 'ru';
 
-		$output['auto_detect_country'] = ! empty( $input['auto_detect_country'] ) ? '1' : '';
+		$output['language_countries'] = isset( $input['language_countries'] ) ? sanitize_text_field( $input['language_countries'] ) : '';
+
+		$output['auto_detect_country'] =! empty( $input['auto_detect_country'] ) ? '1' : '';
 
 		return $output;
 	}
@@ -108,6 +151,14 @@ class Intltel_CF7_Settings {
 		?>
 		<input type="text" class="small-text" maxlength="2" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[default_country]" value="<?php echo esc_attr( $options['default_country'] ); ?>" placeholder="ru" />
 		<p class="description"><?php esc_html_e( 'Код страны ISO-2 (ru, ua, kz...), которая будет выбрана по умолчанию, если в теге [intltel] не указана опция initialcountry и автоопределение выключено или не сработало.', 'intltel-cf7' ); ?></p>
+		<?php
+	}
+
+	public static function render_language_countries_field() {
+		$options = self::get_options();
+		?>
+		<input type="text" class="regular-text" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[language_countries]" value="<?php echo esc_attr( $options['language_countries'] ); ?>" placeholder="ru:ru, en:us" />
+		<p class="description"><?php esc_html_e( 'Страна по умолчанию для языка страницы (Polylang, WPML или язык сайта): код языка и код страны через двоеточие, пары через запятую. Например: ru:ru, en:us, uk:ua. Для языков, которых нет в списке, используется страна по умолчанию.', 'intltel-cf7' ); ?></p>
 		<?php
 	}
 

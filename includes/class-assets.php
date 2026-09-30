@@ -47,7 +47,7 @@ class Intltel_CF7_Assets {
 			'searchPlaceholder'  => translate( 'Search' ),
 			'legacySelector'     => $options['legacy_selector'],
 			'legacyCodeSelector' => $options['legacy_code_selector'],
-			'defaultCountry'     => $options['default_country'],
+			'defaultCountry'     => Intltel_CF7_Settings::get_default_country(),
 			'autoDetectCountry'  => (bool) $options['auto_detect_country'],
 		) );
 
